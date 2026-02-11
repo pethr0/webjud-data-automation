@@ -1,6 +1,4 @@
 ![Python](https://img.shields.io/badge/python-3.x-blue)
-![License](https://img.shields.io/badge/license-MIT-green)
-![GitHub Workflow](https://img.shields.io/github/actions/workflow/status/pethr0/webjud-data-automation/python-app.yml)
 
 # WebJUD Data Automation
 
@@ -81,4 +79,5 @@ O projeto segue uma organização modular, separando responsabilidades como:
 ```bash
 pip install -r requirements.txt
 python src/main.py
+
 
