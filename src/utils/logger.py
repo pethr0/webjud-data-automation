@@ -1,12 +1,13 @@
 import logging
 
-def get_logger():
+def get_logger(name: str):
     logging.basicConfig(
         level=logging.INFO,
-        format="%(asctime)s | %(levelname)s | %(message)s",
+        format="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
         handlers=[
             logging.FileHandler("process.log"),
             logging.StreamHandler()
         ]
     )
-    return logging.getLogger("webjud_automation")
+
+    return logging.getLogger(name)

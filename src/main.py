@@ -1,36 +1,44 @@
-from downloader.web_portal_downloader import download_files
-from processing.data_cleaning import load_and_clean_data
-from processing.validators import validate_dataset
-from processing.consolidations import consolidate_by_cnpj
-from database.access_repository import insert_data
-from email.outlook_sender import send_email_report
+import os
+
+from datetime import datetime
+
+from downloader.web_portal_downloader import WebJudDownloader
+from processing.data_cleaning import DataCleaner
+from processing.validators import BaseValidator
+from database.access_repository import AccessRepository
+from email.outlook_sender import OutlookSender
 from utils.logger import get_logger
-from processing.report import generate_report
 
-logger = get_logger()
+logger = get_logger(__name__)
 
-def main():
-    logger.info("Iniciando processamento WebJUD")
+class WebJudPipeine:
 
-    try:
-	input_file = download_files()
-        df = load_and_clean_data(input_file)
+    def __init__(self):
+        self.today = datetime.today().strftime("%d/%m/%Y")
+        self.temp_path = os.getenv("TEMP_PATH", "data/temp")
+        self.database_path = os.getenv("ACCESS_DB_PATH")
 
-	validate_dataset(df)
+    def run(self):
 
-	consolidated = consolidate_by_cnpj(df)
+        logger.info("Iniciando processamento WebJUD")
 
-	insert_data(df)
+        validator = BaseValidator(self.database_path)
+        validator.validate_already_processed(self.today)
 
-	report_file = generate_report(consolidated)
+        downloader = WebJudDownloader()
+        downloaded_file = downloader.download_file()
 
-	send_email_report(consolidated, report_file)
+        cleaner = DataCleaner(self.temp_path)
+        treated_file = cleaner.process(downloaded_file, self.today)
 
-	logger.info("Processo finalizado com sucesso.")
-   
-    execept Exception as e:
-        logger.error(f"Erro no processamento: {e}")
-        raise
+        repository = AccessRepository(self.database_path)
+        repository.insert_from_excel(treated_file)
+
+        email_sender = OutlookSender(self.database_path)
+        email_sender.send_daily_report(self.today, treated_file)
+
+        logger.info("Processo finalizado com sucesso.")
 
 if __name__ == "__main__":
-    main()
+    pipeline = WebJudPipeline()
+    pipeline.run()
