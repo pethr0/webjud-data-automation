@@ -3,7 +3,7 @@ venv/
 .env/
 
 # Arquivos Sensiveis
-.env
+*.env
 *.accdb
 *.db
 
@@ -16,4 +16,5 @@ __pychace__/
 *.tmp
 
 # Arquivos do Windows
-Thumbs.db
+*.db
+*.xlsx
