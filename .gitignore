@@ -1,0 +1,19 @@
+# Ambiente virtual
+venv/
+.env/
+
+# Arquivos Sensiveis
+.env
+*.accdb
+*.db
+
+# Cache Python
+__pychace__/
+*.pyc
+
+# Arquivos Temporários
+*.log
+*.tmp
+
+# Arquivos do Windows
+Thumbs.db
